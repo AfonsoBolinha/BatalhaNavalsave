@@ -29,12 +29,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
-public class HelloController implements Initializable {
-    Socket soc;
-    int []saidaI = new int[2];
-    int []entrada=new int[2];
-    DataOutputStream output;
-    DataInputStream input;
+public class HelloController extends Thread implements Initializable {
+    private Server server;
     @FXML
     Pane tier1Pane, tier2Pane, tier3Pane, tier4Pane, tier5Pane;
     boolean barco_tier1 = false;
@@ -81,7 +77,7 @@ public class HelloController implements Initializable {
     public Button[][] botoesPlayer;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize (URL url, ResourceBundle rb) {
         timeline = new Timeline(new KeyFrame(Duration.millis(1000), ae -> incrementTime()));
         timeline.setCycleCount(Animation.INDEFINITE);
 
@@ -136,6 +132,26 @@ public class HelloController implements Initializable {
             }
         }
 
+        for (int a=0; a<10;a++){
+            for (int b=0;b<10;b++){
+                int finalA=a;
+                int finalB=b;
+
+                botoesEnimigo[finalA][finalB].setOnAction(new EventHandler<ActionEvent>() {
+
+                    @Override
+                    public void handle(ActionEvent event) {
+                        System.out.println("CLICADO ");
+                        try {
+                            atacar(finalA,finalB);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+            }
+        }
+
         for (int e=0;e<10;e++){
             for (int f=0;f<10;f++){
 
@@ -154,7 +170,15 @@ public class HelloController implements Initializable {
                 });
             }
         }
+        try{
+            server=new Server(new ServerSocket(2222));
+        }catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Erro a criar server");
+        }
+
     }
+
 
 
     //RELOGIO INICIO
@@ -182,6 +206,8 @@ public class HelloController implements Initializable {
     }
 //RELOGIO FIM
 
+
+/*
     //Criar o server
     public void criarServer(){
         try{
@@ -195,14 +221,16 @@ public class HelloController implements Initializable {
     }
 
     public void receiveGame() throws IOException {
+
         String recebido;
+        System.out.println("\n RECEIVED \n");
         while (true){
             recebido=input.readUTF();
             String []saidaS=recebido.split(" ");
 
             saidaI[0]=Integer.parseInt(saidaS[0]);
             saidaI[1]=Integer.parseInt(saidaS[1]);
-            botoesEnimigo[saidaI[0]][saidaI[1]].setStyle("-fx-background-color: #87888a");
+            botoesPlayer[saidaI[0]][saidaI[1]].setStyle("-fx-background-color: #ff0000");
             System.out.println(saidaI[0]+" "+saidaI[1]);
             break;
         }
@@ -215,10 +243,7 @@ public class HelloController implements Initializable {
             e.printStackTrace();
         }
     }
-
-
-
-
+*/
 
     //ROTACAO de barco
     public static void rotate(){
@@ -367,7 +392,7 @@ public class HelloController implements Initializable {
 //Fim de previsualização de colocação de barcos
 
     public void colocar(Button but,int posx,int posy) throws IOException {
-        paneArr = new Pane[][] {{pane11,pane12,pane13,pane14,pane15,pane16,pane17,pane18,pane19,pane110},
+        paneArr = new Pane[][]{{pane11,pane12,pane13,pane14,pane15,pane16,pane17,pane18,pane19,pane110},
                 {pane21,pane22,pane23,pane24,pane25,pane26,pane27,pane28,pane29,pane210},
                 {pane31,pane32,pane33,pane34,pane35,pane36,pane37,pane38,pane39,pane310},
                 {pane41,pane42,pane43,pane44,pane45,pane46,pane47,pane48,pane49,pane410},
@@ -381,10 +406,13 @@ public class HelloController implements Initializable {
         if (barco_tier1){
             paneArr[posx][posy].setStyle("-fx-background-color: #87888a");
 
-            output.write(Integer.parseInt(posx+" "+posy));
-            receiveGame();
+
         }
 
+    }
+
+    public void atacar(int posx,int posy) throws IOException {
+        server.sendJogada(posx,posy);
     }
 
 }
