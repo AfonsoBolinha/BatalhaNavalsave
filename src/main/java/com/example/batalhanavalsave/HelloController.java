@@ -31,6 +31,8 @@ import java.util.ResourceBundle;
 
 public class HelloController extends Thread implements Initializable {
     private Server server;
+    boolean clienteCheck=false,serverCheck=false;
+    private Client client;
     @FXML
     Pane tier1Pane, tier2Pane, tier3Pane, tier4Pane, tier5Pane;
     boolean barco_tier1 = false;
@@ -53,7 +55,7 @@ public class HelloController extends Thread implements Initializable {
     public Pane pane17,pane27,pane37,pane47,pane57,pane67,pane77,pane87,pane97,pane107,pane18,pane28,pane38,pane48,pane58,pane68,pane78,pane88,pane98,pane108;
     public Pane pane19,pane29,pane39,pane49,pane59,pane69,pane79,pane89,pane99,pane109,pane110,pane210,pane310,pane410,pane510,pane610,pane710,pane810,pane910,pane1010;
 
-    Pane[][] paneArr;
+    static Pane[][] paneArr;
 
     public Label timer;
     //Barcos
@@ -170,11 +172,12 @@ public class HelloController extends Thread implements Initializable {
                 });
             }
         }
-        try{
-            server=new Server(new ServerSocket(2222));
-        }catch (IOException e){
-            e.printStackTrace();
-            System.out.println("Erro a criar server");
+        if (clienteCheck){
+            try {
+                client.getJogada();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
@@ -207,19 +210,25 @@ public class HelloController extends Thread implements Initializable {
 //RELOGIO FIM
 
 
-/*
-    //Criar o server
-    public void criarServer(){
-        try{
-            System.out.println("Waiting for clients...");
-            ServerSocket ss = new ServerSocket(2222);
-            soc= ss.accept();
-            System.out.println("Connection Established");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
 
+    //Criar o server
+    public void criarServer() throws IOException {
+        if (!serverCheck){
+            serverCheck=true;
+            try{
+                server=new Server(new ServerSocket(2222));
+            }catch (IOException e){
+                e.printStackTrace();
+                System.out.println("Erro a criar server");
+            }
+        }else {
+            server.teste("Envio de Servidor");
+
+        }
+
+
+    }
+/*
     public void receiveGame() throws IOException {
 
         String recebido;
@@ -234,16 +243,23 @@ public class HelloController extends Thread implements Initializable {
             System.out.println(saidaI[0]+" "+saidaI[1]);
             break;
         }
-    }
-    public void criarCliente(){
-        try{
-            System.out.println("Client Started");
-            soc= new Socket("localhost",2222);
-        }catch(Exception e){
-            e.printStackTrace();
+    }*/
+    public void criarCliente() throws IOException {
+        if (!clienteCheck){
+            clienteCheck=true;
+            try{
+                client = new Client(new Socket("localhost",2222));
+                System.out.println("Conectado ao server");
+            }catch (IOException e){
+                System.out.println("Erro a conectar ao servidor");
+                e.printStackTrace();
+            }
+        }else{
+            client.teste("Envio de Client");
         }
+
     }
-*/
+
 
     //ROTACAO de barco
     public static void rotate(){
@@ -412,7 +428,14 @@ public class HelloController extends Thread implements Initializable {
     }
 
     public void atacar(int posx,int posy) throws IOException {
-        server.sendJogada(posx,posy);
-    }
+        if (serverCheck){
+            server.sendJogada(posx,posy);
+        }
 
+
+    }
+    public void recebeAtaque(int posx,int posy){
+
+        paneArr[posx][posy].setStyle("-fx-background-color: #ff0000");
+    }
 }
