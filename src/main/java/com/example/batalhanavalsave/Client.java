@@ -1,5 +1,5 @@
 package com.example.batalhanavalsave;
-
+/*
 import java.io.*;
 import java.net.Socket;
 
@@ -35,8 +35,6 @@ public class Client {
 
                     }
                     System.out.println(teste);
-
-
                 }
             }
         }).start();
@@ -72,6 +70,7 @@ public class Client {
                 //codigo
             }
         }).start();*/
+/*
         while (true){
             try{
                 String jogada=bufferedReader.readLine();
@@ -104,3 +103,4 @@ public class Client {
     }
 
 }
+*/
