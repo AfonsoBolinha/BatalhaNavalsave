@@ -24,7 +24,7 @@ public class HelloApplication extends Application {
                 }
             }
         });
-        stage.setTitle("Hello!");
+        stage.setTitle("Server");
         stage.setScene(scene);
         stage.show();
     }
