@@ -1,5 +1,7 @@
 package com.example.batalhanavalsave;
-/*
+
+import javafx.scene.layout.Pane;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -21,28 +23,8 @@ public class Client {
     }
 
 
-    public void teste(String mensagem) throws IOException {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (socket.isConnected()){
-                    System.out.println("Aqui desespera, n se espera");
-                    String teste= null;
-                    try {
-                        teste = bufferedReader.readLine();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-
-                    }
-                    System.out.println(teste);
-                }
-            }
-        }).start();
 
 
-
-
-    }
     public void fechoGeral(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
         try{
             if (bufferedReader != null){
@@ -58,36 +40,31 @@ public class Client {
         }
     }
 
-    public void getJogada() throws IOException {
+    public void getJogada(Pane[][]paneArr) throws IOException {
         int []posicaoI=new int[3];
-        HelloController control = new HelloController();
 
-        //min 34
-        /*
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                //codigo
+                while(socket.isConnected()){
+                    try{
+                        String jogada=bufferedReader.readLine();
+                        String []posicaoS=jogada.split(" ");
+
+                        posicaoI[0]=Integer.parseInt(posicaoS[0]);
+                        posicaoI[1]=Integer.parseInt(posicaoS[1]);
+
+                        HelloController.receiveGame(posicaoI[0],posicaoI[1],paneArr);
+                    }catch (IOException e){
+                        e.printStackTrace();
+                        System.out.println("Erro a receber coordenadas");
+                        fechoGeral(socket,bufferedReader,bufferedWriter);
+                        break;
+                    }
+                }
             }
-        }).start();*/
-/*
-        while (true){
-            try{
-                String jogada=bufferedReader.readLine();
-                String []posicaoS=jogada.split(" ");
-
-                posicaoI[0]=Integer.parseInt(posicaoS[0]);
-                posicaoI[1]=Integer.parseInt(posicaoS[1]);
-
-                control.recebeAtaque(posicaoI[0],posicaoI[1]);
-            }catch (IOException e){
-                e.printStackTrace();
-                System.out.println("Erro a receber coordenadas");
-                fechoGeral(socket,bufferedReader,bufferedWriter);
-            }
-            break;
-        }
-
+        }).start();
     }
     public void sendJogada(int posx, int posy){
         String mensagem= posx+" "+posy;
@@ -102,5 +79,5 @@ public class Client {
         }
     }
 
+
 }
-*/

@@ -4,6 +4,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -23,15 +24,17 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class HelloController implements Initializable {
-    //private Server server;
+    private Server server;
     //private Server2 server2;
-    //boolean clienteCheck=false,serverCheck=false;
+    boolean clienteCheck=false,serverCheck=false;
     //ControllerClient controllerClient=new ControllerClient();
 
     //FXMLLoader loader=new FXMLLoader(getClass().getResource("batalhaNavalClient.fxml"));
@@ -40,7 +43,7 @@ public class HelloController implements Initializable {
     public static String estilo;
     public Label numT1,numT2,numT3,numT4,numT5;
     public int qtdT1=3,qtdT2=2,qtdT3=1,qtdT4=1,qtdT5=1;
-    //private Client client;
+    private Client client;
     @FXML
     Pane tier1Pane, tier2Pane, tier3Pane, tier4Pane, tier5Pane;
     boolean barco_tier1 = false;
@@ -127,6 +130,8 @@ public class HelloController implements Initializable {
         tier4.hoverProperty().addListener((observableValue, number, t1) -> mouseOver(tier4));
         tier5.hoverProperty().addListener((observableValue, number, t1) -> mouseOver(tier5));
 
+
+
         for (int a = 0; a < 10; a++) {
             for (int b = 0; b < 10; b++) {
 
@@ -162,6 +167,22 @@ public class HelloController implements Initializable {
                     }
                 });
             }
+            paneArr = new Pane[][]{{pane11,pane12,pane13,pane14,pane15,pane16,pane17,pane18,pane19,pane110},
+                    {pane21,pane22,pane23,pane24,pane25,pane26,pane27,pane28,pane29,pane210},
+                    {pane31,pane32,pane33,pane34,pane35,pane36,pane37,pane38,pane39,pane310},
+                    {pane41,pane42,pane43,pane44,pane45,pane46,pane47,pane48,pane49,pane410},
+                    {pane51,pane52,pane53,pane54,pane55,pane56,pane57,pane58,pane59,pane510},
+                    {pane61,pane62,pane63,pane64,pane65,pane66,pane67,pane68,pane69,pane610},
+                    {pane71,pane72,pane73,pane74,pane75,pane76,pane77,pane78,pane79,pane710},
+                    {pane81,pane82,pane83,pane84,pane85,pane86,pane87,pane88,pane89,pane810},
+                    {pane91,pane92,pane93,pane94,pane95,pane96,pane97,pane98,pane99,pane910},
+                    {pane101,pane102,pane103,pane104,pane105,pane106,pane107,pane108,pane109,pane1010}};
+
+
+
+
+
+
         }
 
         for (int e=0;e<10;e++){
@@ -220,56 +241,49 @@ public class HelloController implements Initializable {
 //RELOGIO FIM
 
 
-/*Tentativa 1(N Funciona)
+
     //Criar o server
     public void criarServer() throws IOException {
-        if (!serverCheck){
-            serverCheck=true;
-            try{
-                server=new Server(new ServerSocket(2222));
-            }catch (IOException e){
-                e.printStackTrace();
-                System.out.println("Erro a criar server");
-            }
-        }else {
-            server.teste("Envio de Servidor");
-
+        serverCheck=true;
+        try{
+            server=new Server(new ServerSocket(2222));
+        }catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Erro a criar server");
         }
-
-
+        server.getJogada(paneArr);
     }
 
-    public void receiveGame() throws IOException {
-
+    public static void receiveGame(int posx,int posy,Pane [][]paneArr) throws IOException {
         String recebido;
         System.out.println("\n RECEIVED \n");
-        while (true){
-            recebido=input.readUTF();
-            String []saidaS=recebido.split(" ");
-
-            saidaI[0]=Integer.parseInt(saidaS[0]);
-            saidaI[1]=Integer.parseInt(saidaS[1]);
-            botoesPlayer[saidaI[0]][saidaI[1]].setStyle("-fx-background-color: #ff0000");
-            System.out.println(saidaI[0]+" "+saidaI[1]);
-            break;
-        }
-    }
-    public void criarCliente() throws IOException {
-        if (!clienteCheck){
-            clienteCheck=true;
-            try{
-                client = new Client(new Socket("localhost",2222));
-                System.out.println("Conectado ao server");
-            }catch (IOException e){
-                System.out.println("Erro a conectar ao servidor");
-                e.printStackTrace();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    recebeAtaque(posx,posy,paneArr);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }else{
-            client.teste("Envio de Client");
-        }
+        });
 
     }
-*/
+
+    public void criarCliente() throws IOException {
+
+        clienteCheck=true;
+        try{
+            client = new Client(new Socket("localhost",2222));
+            System.out.println("Conectado ao server");
+        }catch (IOException e){
+            System.out.println("Erro a conectar ao servidor");
+            e.printStackTrace();
+        }
+
+        client.getJogada(paneArr);
+    }
+
 
     //ROTACAO de barco
     public static void rotate(){
@@ -422,8 +436,8 @@ public class HelloController implements Initializable {
 
         if (barco_tier1){
             if (qtdT1>0){
-                System.out.println(paneArr2(posx,posy));
-                paneArr2(posx,posy).setStyle("-fx-background-color: #56a5ee");
+
+                paneArr[posx][posy].setStyle("-fx-background-color: #56a5ee");
                 qtdT1--;
                 numT1.setText(""+qtdT1);
 
@@ -525,10 +539,11 @@ public class HelloController implements Initializable {
     }*/
     public void atacar(int posx,int posy) throws IOException {
         //controllerClient.paneArr[posx][posy].setStyle("-fx-background-color: #87888a");
-        /*
         if (serverCheck){
-            server2.envia(posx,posy);
-        }*/
+            server.sendJogada(posx,posy);
+        }else {
+            client.sendJogada(posx,posy);
+        }
 
 
 
@@ -537,10 +552,9 @@ public class HelloController implements Initializable {
 
         return paneArr[posx][posy];
     }
-    public void recebeAtaque(int posx, int posy) throws IOException{
-        //System.out.println(posx+" "+posy);
-        System.out.println(paneArr2(posx,posy));
-        //estilo= paneArr[posx][posy].getStyle();
+    public static void  recebeAtaque(int posx, int posy,Pane [][]paneArr) throws IOException{
+        paneArr[posx][posy].setStyle("-fx-background-color: #ff0000");
+
     }
 
     private Pane  paneArr2(int posx,int posy){
@@ -557,11 +571,12 @@ public class HelloController implements Initializable {
         return paneArr[posx][posy];
     }
 
-    public static String enviaEstilo(int x,int y) throws IOException {
-        HelloController controller=new HelloController();
-        controller.recebeAtaque(x,y);
+    public static Pane enviaEstilo(int x,int y,Pane [][]paneArr) throws IOException {
 
-        return estilo;
+        Pane pane= paneArr[x][y];
+
+
+        return pane;
     }
 
 

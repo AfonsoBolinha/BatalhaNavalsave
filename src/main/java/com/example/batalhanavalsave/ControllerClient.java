@@ -4,12 +4,14 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
 import javafx.scene.control.Button;
@@ -29,14 +31,19 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
-public class ControllerClient extends HelloController implements Initializable {
-    //private Server server;
+public class ControllerClient implements Initializable {
+    private Server server;
     //private Server2 server2;
-    //boolean clienteCheck=false,serverCheck=false;
-    HelloController helloController=new HelloController();
+    boolean clienteCheck=false,serverCheck=false;
+    //ControllerClient controllerClient=new ControllerClient();
+
+    //FXMLLoader loader=new FXMLLoader(getClass().getResource("batalhaNavalClient.fxml"));
+    //ControllerClient controllerClient=new ControllerClient();
+
+    public static String estilo;
     public Label numT1,numT2,numT3,numT4,numT5;
     public int qtdT1=3,qtdT2=2,qtdT3=1,qtdT4=1,qtdT5=1;
-    //private Client client;
+    private Client client;
     @FXML
     Pane tier1Pane, tier2Pane, tier3Pane, tier4Pane, tier5Pane;
     boolean barco_tier1 = false;
@@ -59,7 +66,9 @@ public class ControllerClient extends HelloController implements Initializable {
     public Pane pane17,pane27,pane37,pane47,pane57,pane67,pane77,pane87,pane97,pane107,pane18,pane28,pane38,pane48,pane58,pane68,pane78,pane88,pane98,pane108;
     public Pane pane19,pane29,pane39,pane49,pane59,pane69,pane79,pane89,pane99,pane109,pane110,pane210,pane310,pane410,pane510,pane610,pane710,pane810,pane910,pane1010;
 
-    public Pane[][] paneArr;
+    public Pane[][] paneArr=new Pane[10][10];
+
+
 
     public Label timer;
     //Barcos
@@ -214,56 +223,49 @@ public class ControllerClient extends HelloController implements Initializable {
 //RELOGIO FIM
 
 
-/*Tentativa 1(N Funciona)
+
     //Criar o server
     public void criarServer() throws IOException {
-        if (!serverCheck){
-            serverCheck=true;
-            try{
-                server=new Server(new ServerSocket(2222));
-            }catch (IOException e){
-                e.printStackTrace();
-                System.out.println("Erro a criar server");
-            }
-        }else {
-            server.teste("Envio de Servidor");
-
+        serverCheck=true;
+        try{
+            server=new Server(new ServerSocket(2222));
+        }catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Erro a criar server");
         }
-
-
+        server.getJogada(paneArr);
     }
 
-    public void receiveGame() throws IOException {
-
+    public static void receiveGame(int posx,int posy,Pane [][]paneArr) throws IOException {
         String recebido;
         System.out.println("\n RECEIVED \n");
-        while (true){
-            recebido=input.readUTF();
-            String []saidaS=recebido.split(" ");
-
-            saidaI[0]=Integer.parseInt(saidaS[0]);
-            saidaI[1]=Integer.parseInt(saidaS[1]);
-            botoesPlayer[saidaI[0]][saidaI[1]].setStyle("-fx-background-color: #ff0000");
-            System.out.println(saidaI[0]+" "+saidaI[1]);
-            break;
-        }
-    }
-    public void criarCliente() throws IOException {
-        if (!clienteCheck){
-            clienteCheck=true;
-            try{
-                client = new Client(new Socket("localhost",2222));
-                System.out.println("Conectado ao server");
-            }catch (IOException e){
-                System.out.println("Erro a conectar ao servidor");
-                e.printStackTrace();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    recebeAtaque(posx,posy,paneArr);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }else{
-            client.teste("Envio de Client");
-        }
+        });
 
     }
-*/
+
+    public void criarCliente() throws IOException {
+
+        clienteCheck=true;
+        try{
+            client = new Client(new Socket("localhost",2222));
+            System.out.println("Conectado ao server");
+        }catch (IOException e){
+            System.out.println("Erro a conectar ao servidor");
+            e.printStackTrace();
+        }
+
+        client.getJogada(paneArr);
+    }
+
 
     //ROTACAO de barco
     public static void rotate(){
@@ -412,22 +414,15 @@ public class ControllerClient extends HelloController implements Initializable {
 //Fim de previsualização de colocação de barcos
 
     public void colocar(Button but,int posx,int posy) throws IOException {
-        paneArr = new Pane[][]{{pane11,pane12,pane13,pane14,pane15,pane16,pane17,pane18,pane19,pane110},
-                {pane21,pane22,pane23,pane24,pane25,pane26,pane27,pane28,pane29,pane210},
-                {pane31,pane32,pane33,pane34,pane35,pane36,pane37,pane38,pane39,pane310},
-                {pane41,pane42,pane43,pane44,pane45,pane46,pane47,pane48,pane49,pane410},
-                {pane51,pane52,pane53,pane54,pane55,pane56,pane57,pane58,pane59,pane510},
-                {pane61,pane62,pane63,pane64,pane65,pane66,pane67,pane68,pane69,pane610},
-                {pane71,pane72,pane73,pane74,pane75,pane76,pane77,pane78,pane79,pane710},
-                {pane81,pane82,pane83,pane84,pane85,pane86,pane87,pane88,pane89,pane810},
-                {pane91,pane92,pane93,pane94,pane95,pane96,pane97,pane98,pane99,pane910},
-                {pane101,pane102,pane103,pane104,pane105,pane106,pane107,pane108,pane109,pane1010}};
+
 
         if (barco_tier1){
             if (qtdT1>0){
-                paneArr[posx][posy].setStyle("-fx-background-color: #56a5ee");
+                System.out.println(paneArr2(posx,posy));
+                paneArr2(posx,posy).setStyle("-fx-background-color: #56a5ee");
                 qtdT1--;
                 numT1.setText(""+qtdT1);
+
             }else{
                 tier1.setDisable(true);
             }
@@ -435,11 +430,11 @@ public class ControllerClient extends HelloController implements Initializable {
         if (barco_tier2){
             if (qtdT2>0){
                 if (rodado){
-                    paneArr[posx][posy].setStyle("-fx-background-color: #008000");
-                    paneArr[posx+1][posy].setStyle("-fx-background-color: #008000");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #008000");
+                    paneArr2(posx+1,posy).setStyle("-fx-background-color: #008000");
                 }else {
-                    paneArr[posx][posy].setStyle("-fx-background-color: #008000");
-                    paneArr[posx][posy+1].setStyle("-fx-background-color: #008000");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #008000");
+                    paneArr2(posx,posy+1).setStyle("-fx-background-color: #008000");
                 }
                 qtdT2--;
                 numT2.setText(""+qtdT2);
@@ -450,13 +445,13 @@ public class ControllerClient extends HelloController implements Initializable {
         if (barco_tier3){
             if (qtdT3>0){
                 if (rodado){
-                    paneArr[posx][posy].setStyle("-fx-background-color: #ffd700");
-                    paneArr[posx+1][posy].setStyle("-fx-background-color: #ffd700");
-                    paneArr[posx-1][posy].setStyle("-fx-background-color: #ffd700");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #ffd700");
+                    paneArr2(posx+1,posy).setStyle("-fx-background-color: #ffd700");
+                    paneArr2(posx-1,posy).setStyle("-fx-background-color: #ffd700");
                 }else{
-                    paneArr[posx][posy].setStyle("-fx-background-color: #ffd700");
-                    paneArr[posx][posy+1].setStyle("-fx-background-color: #ffd700");
-                    paneArr[posx][posy-1].setStyle("-fx-background-color: #ffd700");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #ffd700");
+                    paneArr2(posx,posy+1).setStyle("-fx-background-color: #ffd700");
+                    paneArr2(posx,posy-1).setStyle("-fx-background-color: #ffd700");
                 }
                 qtdT3--;
                 numT3.setText(""+qtdT3);
@@ -467,15 +462,15 @@ public class ControllerClient extends HelloController implements Initializable {
         if (barco_tier4){
             if (qtdT4>0){
                 if (rodado){
-                    paneArr[posx][posy].setStyle("-fx-background-color: #050f42");
-                    paneArr[posx+1][posy].setStyle("-fx-background-color: #050f42");
-                    paneArr[posx+2][posy].setStyle("-fx-background-color: #050f42");
-                    paneArr[posx+3][posy].setStyle("-fx-background-color: #050f42");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #050f42");
+                    paneArr2(posx+1,posy).setStyle("-fx-background-color: #050f42");
+                    paneArr2(posx+2,posy).setStyle("-fx-background-color: #050f42");
+                    paneArr2(posx+3,posy).setStyle("-fx-background-color: #050f42");
                 }else{
-                    paneArr[posx][posy].setStyle("-fx-background-color: #050f42");
-                    paneArr[posx][posy+1].setStyle("-fx-background-color: #050f42");
-                    paneArr[posx][posy+2].setStyle("-fx-background-color: #050f42");
-                    paneArr[posx][posy+3].setStyle("-fx-background-color: #050f42");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #050f42");
+                    paneArr2(posx,posy+1).setStyle("-fx-background-color: #050f42");
+                    paneArr2(posx,posy+2).setStyle("-fx-background-color: #050f42");
+                    paneArr2(posx,posy+3).setStyle("-fx-background-color: #050f42");
                 }
                 qtdT4--;
                 numT4.setText(""+qtdT4);
@@ -485,31 +480,30 @@ public class ControllerClient extends HelloController implements Initializable {
         }
         if (barco_tier5){
             if (qtdT5>0){
-
                 if (rotated==0){
-                    paneArr[posx][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx][posy+1].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx][posy-1].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx+1][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx+2][posy].setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy+1).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy-1).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx+1,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx+2,posy).setStyle("-fx-background-color: #87888a");
                 } else if (rotated==1) {
-                    paneArr[posx][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx-1][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx+1][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx][posy+1].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx][posy+2].setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx-1,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx+1,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy+1).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy+2).setStyle("-fx-background-color: #87888a");
                 } else if (rotated==2) {
-                    paneArr[posx][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx][posy+1].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx][posy-1].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx-1][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx-2][posy].setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy+1).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy-1).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx-1,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx-2,posy).setStyle("-fx-background-color: #87888a");
                 }else {
-                    paneArr[posx][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx-1][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx+1][posy].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx][posy-1].setStyle("-fx-background-color: #87888a");
-                    paneArr[posx][posy-2].setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx-1,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx+1,posy).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy-1).setStyle("-fx-background-color: #87888a");
+                    paneArr2(posx,posy-2).setStyle("-fx-background-color: #87888a");
                 }
                 qtdT5--;
                 numT5.setText(""+qtdT5);
@@ -526,23 +520,47 @@ public class ControllerClient extends HelloController implements Initializable {
         client2.recebe();
     }*/
     public void atacar(int posx,int posy) throws IOException {
-        botoesEnimigo = new Button[][]{{e11, e12, e13, e14, e15, e16, e17, e18, e19, e110},
-                {e21, e22, e23, e24, e25, e26, e27, e28, e29, e210},
-                {e31, e32, e33, e34, e35, e36, e37, e38, e39, e310},
-                {e41, e42, e43, e44, e45, e46, e47, e48, e49, e410},
-                {e51, e52, e53, e54, e55, e56, e57, e58, e59, e510},
-                {e61, e62, e63, e64, e65, e66, e67, e68, e69, e610},
-                {e71, e72, e73, e74, e75, e76, e77, e78, e79, e710},
-                {e81, e82, e83, e84, e85, e86, e87, e88, e89, e810},
-                {e91, e92, e93, e94, e95, e96, e97, e98, e99, e910},
-                {e101, e102, e103, e104, e105, e106, e107, e108, e109, e1010}};
-        botoesEnimigo[posx][posy].setStyle(HelloController.enviaEstilo(posx,posy));
-        /*
+        //controllerClient.paneArr[posx][posy].setStyle("-fx-background-color: #87888a");
         if (serverCheck){
-            server2.envia(posx,posy);
-        }*/
+            server.sendJogada(posx,posy);
+        }else {
+            client.sendJogada(posx,posy);
+        }
 
-        //botoesEnimigo[posx][posy].setStyle(HelloController.recebeAtaque(posx,posy));
+
+
     }
+    public Pane panela(int posx,int posy){
+
+        return paneArr[posx][posy];
+    }
+    public static void  recebeAtaque(int posx, int posy,Pane [][]paneArr) throws IOException{
+
+        enviaEstilo(posx,posy,paneArr).setStyle("-fx-background-color: #ff0000");
+    }
+
+    private Pane  paneArr2(int posx,int posy){
+        paneArr = new Pane[][]{{pane11,pane12,pane13,pane14,pane15,pane16,pane17,pane18,pane19,pane110},
+                {pane21,pane22,pane23,pane24,pane25,pane26,pane27,pane28,pane29,pane210},
+                {pane31,pane32,pane33,pane34,pane35,pane36,pane37,pane38,pane39,pane310},
+                {pane41,pane42,pane43,pane44,pane45,pane46,pane47,pane48,pane49,pane410},
+                {pane51,pane52,pane53,pane54,pane55,pane56,pane57,pane58,pane59,pane510},
+                {pane61,pane62,pane63,pane64,pane65,pane66,pane67,pane68,pane69,pane610},
+                {pane71,pane72,pane73,pane74,pane75,pane76,pane77,pane78,pane79,pane710},
+                {pane81,pane82,pane83,pane84,pane85,pane86,pane87,pane88,pane89,pane810},
+                {pane91,pane92,pane93,pane94,pane95,pane96,pane97,pane98,pane99,pane910},
+                {pane101,pane102,pane103,pane104,pane105,pane106,pane107,pane108,pane109,pane1010}};
+        return paneArr[posx][posy];
+    }
+
+    public static Pane enviaEstilo(int x,int y,Pane [][]paneArr) throws IOException {
+
+        Pane pane= paneArr[x][y];
+
+
+        return pane;
+    }
+
+
 
 }

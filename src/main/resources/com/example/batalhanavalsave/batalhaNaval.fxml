@@ -850,8 +850,8 @@
                                 </Pane>
                         <HBox prefHeight="102.0" prefWidth="327.0">
                            <children>
-                                      <Button fx:id="client"  mnemonicParsing="false"  prefHeight="106.0" prefWidth="60.0" text="Client" />
-                                      <Button fx:id="serverBut"  mnemonicParsing="false" prefHeight="103.0" prefWidth="60.0" text="Server" />
+                                      <Button fx:id="clientBut" onAction="#criarCliente" mnemonicParsing="false"  prefHeight="106.0" prefWidth="60.0" text="Client" />
+                                      <Button fx:id="serverBut" onAction="#criarServer" mnemonicParsing="false" prefHeight="106.0" prefWidth="60.0" text="Server" />
                               <VBox prefHeight="102.0" prefWidth="209.0">
                                  <children>
                                     <TextField fx:id="ip" prefHeight="25.0" prefWidth="160.0" promptText="Insira o IP a conectar" />
