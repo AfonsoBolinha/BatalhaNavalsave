@@ -1,4 +1,4 @@
-package com.example.batalhanavalsave;
+/*package com.example.batalhanavalsave;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -193,103 +193,104 @@ public class ControllerClient implements Initializable {
             }
         }*/
 
-    }
-
-
-
-    //RELOGIO INICIO
-    private void incrementTime() {
-        time = time.plusSeconds(1);
-        timer.setText(time.format(dtf));
-    }
-
-    private void startTimer() {
-        timeline.play();
-    }
-
-    private void pauseTimer() {
-        timeline.pause();
-    }
-
-    public void start() {
-        if (started) {
-            pauseTimer();
-            started = false;
-        } else {
-            startTimer();
-            started = true;
-        }
-    }
-//RELOGIO FIM
-
-
-
-    //Criar o server
-    public void criarServer() throws IOException {
-        serverCheck=true;
-        try{
-            server=new Server(new ServerSocket(2222));
-        }catch (IOException e){
-            e.printStackTrace();
-            System.out.println("Erro a criar server");
-        }
-        server.getJogada(paneArr);
-    }
-
-    public static void receiveGame(int posx,int posy,Pane [][]paneArr) throws IOException {
-        String recebido;
-        System.out.println("\n RECEIVED \n");
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    recebeAtaque(posx,posy,paneArr);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-
-    }
-
-    public void criarCliente() throws IOException {
-
-        clienteCheck=true;
-        try{
-            client = new Client(new Socket("localhost",2222));
-            System.out.println("Conectado ao server");
-        }catch (IOException e){
-            System.out.println("Erro a conectar ao servidor");
-            e.printStackTrace();
-        }
-
-        client.getJogada(paneArr);
-    }
-
-
-    //ROTACAO de barco
-    public static void rotate(){
+//    }
+//
+//
+//
+//    //RELOGIO INICIO
+//    private void incrementTime() {
+//        time = time.plusSeconds(1);
+//        timer.setText(time.format(dtf));
+//    }
+//
+//    private void startTimer() {
+//        timeline.play();
+//    }
+//
+//    private void pauseTimer() {
+//        timeline.pause();
+//    }
+//
+//    public void start() {
+//        if (started) {
+//            pauseTimer();
+//            started = false;
+//        } else {
+//            startTimer();
+//            started = true;
+//        }
+//    }
+////RELOGIO FIM
+//
+//
+//
+//    //Criar o server
+//    public void criarServer() throws IOException {
+//        serverCheck=true;
+//        try{
+//            server=new Server(new ServerSocket(2222));
+//        }catch (IOException e){
+//            e.printStackTrace();
+//            System.out.println("Erro a criar server");
+//        }
+//        server.getJogada(paneArr);
+//    }
+//
+//    public static void receiveGame(int posx,int posy,Pane [][]paneArr) throws IOException {
+//        String recebido;
+//        System.out.println("\n RECEIVED \n");
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    recebeAtaque(posx,posy,paneArr);
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        });
+//
+//    }
+//
+//    public void criarCliente() throws IOException {
+//
+//        clienteCheck=true;
+//        try{
+//            client = new Client(new Socket("localhost",2222));
+//            System.out.println("Conectado ao server");
+//        }catch (IOException e){
+//            System.out.println("Erro a conectar ao servidor");
+//            e.printStackTrace();
+//        }
+//
+//        client.getJogada(paneArr);
+//    }
+//
+//
+//    //ROTACAO de barco
+//    public static void rotate(){
         //O rodado significa que a peça está ou no eixo X ou no eixo Y
-        rodado= !rodado;
+        //rodado= !rodado;
         //Rotated tem 4 posiçoes, podendo ser eixo X para direita(1) ou esquerda(2) e eixo Y cima(3) ou baixo(0)
-        if (rotated<=3){
+        /*if (rotated<=3){
             rotated++;
         }else {
             rotated=0;
         }
-    }
+    }*/
 
     //Previsualização Campo inimigo
-    public void mouseOver(Button but) {
+   /* public void mouseOver(Button but) {
         if (but.isHover()) {
             but.setStyle("-fx-background-color: #ade3f0");
 
         } else {
             but.setStyle("-fx-background-color: rgba(0,0,0,0);");
         }
-    }
+    }*/
 
     //BANDEIRA marcador de possivel inimigo
+/*
     public void bandeira(MouseEvent butao) {
         e11.setStyle("-fx-background-color: rgba(0,0,0,0)");
 
@@ -298,9 +299,10 @@ public class ControllerClient implements Initializable {
         } else {
             e11.setText("");
         }
-    }
+    }*/
 
     //Tratamento da seleção e coloraçao dos barcos
+/*
     public boolean setFalse(Pane pane) {
         tier1Pane.setStyle("-fx-background-color: #ffffff");
         tier2Pane.setStyle("-fx-background-color: #ffffff");
@@ -336,11 +338,12 @@ public class ControllerClient implements Initializable {
 
     public void setTier5() {
         barco_tier5 = setFalse(tier5Pane);
-    }
+    }*/
 //Fim do tratamento da seleção e coloraçao dos barcos
 
 
     //Previsualização de colocação de barcos
+/*
     public void mouseOverPlayer(Button but,int cord1,int cord2) {
         try{
             if (!but.isHover()) {
@@ -410,9 +413,9 @@ public class ControllerClient implements Initializable {
         }catch (Exception ignored){
 
         }
-    }
+    }*/
 //Fim de previsualização de colocação de barcos
-
+/*
     public void colocar(Button but,int posx,int posy) throws IOException {
 
 
@@ -511,7 +514,8 @@ public class ControllerClient implements Initializable {
                 tier5.setDisable(true);
             }
         }
-    }/*
+    }
+    *//*
     public void servidor(){
         Server2 server2= new Server2(2222);
     }
@@ -519,6 +523,7 @@ public class ControllerClient implements Initializable {
         Client2 client2= new Client2("localhost",2222);
         client2.recebe();
     }*/
+/*
     public void atacar(int posx,int posy) throws IOException {
         //controllerClient.paneArr[posx][posy].setStyle("-fx-background-color: #87888a");
         if (serverCheck){
@@ -564,3 +569,4 @@ public class ControllerClient implements Initializable {
 
 
 }
+*/

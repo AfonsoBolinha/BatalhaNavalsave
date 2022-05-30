@@ -68,6 +68,13 @@ public class HelloController implements Initializable {
 
     public Pane[][] paneArr=new Pane[10][10];
 
+    public Pane paneE11,paneE21,paneE31,paneE41,paneE51,paneE61,paneE71,paneE81,paneE91,paneE101,paneE12,paneE22,paneE32,paneE42,paneE52,paneE62,paneE72,paneE82,paneE92,paneE102;
+    public Pane paneE13,paneE23,paneE33,paneE43,paneE53,paneE63,paneE73,paneE83,paneE93,paneE103,paneE14,paneE24,paneE34,paneE44,paneE54,paneE64,paneE74,paneE84,paneE94,paneE104;
+    public Pane paneE15,paneE25,paneE35,paneE45,paneE55,paneE65,paneE75,paneE85,paneE95,paneE105,paneE16,paneE26,paneE36,paneE46,paneE56,paneE66,paneE76,paneE86,paneE96,paneE106;
+    public Pane paneE17,paneE27,paneE37,paneE47,paneE57,paneE67,paneE77,paneE87,paneE97,paneE107,paneE18,paneE28,paneE38,paneE48,paneE58,paneE68,paneE78,paneE88,paneE98,paneE108;
+    public Pane paneE19,paneE29,paneE39,paneE49,paneE59,paneE69,paneE79,paneE89,paneE99,paneE109,paneE110,paneE210,paneE310,paneE410,paneE510,paneE610,paneE710,paneE810,paneE910,paneE1010;
+
+    public Pane[][] paneEni=new Pane[10][10];
 
 
     public Label timer;
@@ -178,7 +185,16 @@ public class HelloController implements Initializable {
                     {pane91,pane92,pane93,pane94,pane95,pane96,pane97,pane98,pane99,pane910},
                     {pane101,pane102,pane103,pane104,pane105,pane106,pane107,pane108,pane109,pane1010}};
 
-
+            paneEni = new Pane[][]{{paneE11,paneE12,paneE13,paneE14,paneE15,paneE16,paneE17,paneE18,paneE19,paneE110},
+                    {paneE21,paneE22,paneE23,paneE24,paneE25,paneE26,paneE27,paneE28,paneE29,paneE210},
+                    {paneE31,paneE32,paneE33,paneE34,paneE35,paneE36,paneE37,paneE38,paneE39,paneE310},
+                    {paneE41,paneE42,paneE43,paneE44,paneE45,paneE46,paneE47,paneE48,paneE49,paneE410},
+                    {paneE51,paneE52,paneE53,paneE54,paneE55,paneE56,paneE57,paneE58,paneE59,paneE510},
+                    {paneE61,paneE62,paneE63,paneE64,paneE65,paneE66,paneE67,paneE68,paneE69,paneE610},
+                    {paneE71,paneE72,paneE73,paneE74,paneE75,paneE76,paneE77,paneE78,paneE79,paneE710},
+                    {paneE81,paneE82,paneE83,paneE84,paneE85,paneE86,paneE87,paneE88,paneE89,paneE810},
+                    {paneE91,paneE92,paneE93,paneE94,paneE95,paneE96,paneE97,paneE98,paneE99,paneE910},
+                    {paneE101,paneE102,paneE103,paneE104,paneE105,paneE106,paneE107,paneE108,paneE109,paneE1010}};
 
 
 
@@ -251,17 +267,16 @@ public class HelloController implements Initializable {
             e.printStackTrace();
             System.out.println("Erro a criar server");
         }
-        server.getJogada(paneArr);
+        server.getJogada(paneArr,serverCheck,server,client,paneEni);
     }
 
-    public static void receiveGame(int posx,int posy,Pane [][]paneArr) throws IOException {
-        String recebido;
+    public static void receiveGame(int posx,int posy,Pane [][]paneArr,boolean serverCheck,Server server,Client client,Pane [][]paneEni) throws IOException {
         System.out.println("\n RECEIVED \n");
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 try {
-                    recebeAtaque(posx,posy,paneArr);
+                    recebeAtaque(posx,posy,paneArr,serverCheck,server,client);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -281,7 +296,7 @@ public class HelloController implements Initializable {
             e.printStackTrace();
         }
 
-        client.getJogada(paneArr);
+        client.getJogada(paneArr,serverCheck,server,client,paneEni);
     }
 
 
@@ -552,9 +567,14 @@ public class HelloController implements Initializable {
 
         return paneArr[posx][posy];
     }
-    public static void  recebeAtaque(int posx, int posy,Pane [][]paneArr) throws IOException{
-        paneArr[posx][posy].setStyle("-fx-background-color: #ff0000");
+    public static void  recebeAtaque(int posx, int posy,Pane [][]paneArr,boolean serverCheck,Server server,Client client) throws IOException{
 
+        if (serverCheck){
+            server.sendStyle(paneArr[posx][posy].getStyle()+" "+posx+" "+posy);
+        }else {
+            client.sendStyle(paneArr[posx][posy].getStyle()+" "+posx+" "+posy);
+        }
+        paneArr[posx][posy].setStyle("-fx-background-color: #ff0000");
     }
 
     private Pane  paneArr2(int posx,int posy){
@@ -570,14 +590,10 @@ public class HelloController implements Initializable {
                 {pane101,pane102,pane103,pane104,pane105,pane106,pane107,pane108,pane109,pane1010}};
         return paneArr[posx][posy];
     }
-
-    public static Pane enviaEstilo(int x,int y,Pane [][]paneArr) throws IOException {
-
-        Pane pane= paneArr[x][y];
-
-
-        return pane;
+    public static void paint(int posx,int posy,String estilo,Pane [][]paneEni){
+        paneEni[posx][posy].setStyle(estilo);
     }
+
 
 
 

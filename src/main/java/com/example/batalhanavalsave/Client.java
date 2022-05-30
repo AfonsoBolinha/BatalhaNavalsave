@@ -1,5 +1,6 @@
 package com.example.batalhanavalsave;
 
+import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 
 import java.io.*;
@@ -40,9 +41,8 @@ public class Client {
         }
     }
 
-    public void getJogada(Pane[][]paneArr) throws IOException {
+    public void getJogada(Pane[][]paneArr, boolean serverCheck, Server server, Client client, Pane [][]paneEni) throws IOException {
         int []posicaoI=new int[3];
-
 
         new Thread(new Runnable() {
             @Override
@@ -52,10 +52,19 @@ public class Client {
                         String jogada=bufferedReader.readLine();
                         String []posicaoS=jogada.split(" ");
 
-                        posicaoI[0]=Integer.parseInt(posicaoS[0]);
-                        posicaoI[1]=Integer.parseInt(posicaoS[1]);
+                        if (posicaoS[0].equals("-fx-background-color:")){
+                            int posx=Integer.parseInt(posicaoS[2]),posy=Integer.parseInt(posicaoS[3]);
+                            String style=posicaoS[0]+" "+posicaoS[1];
 
-                        HelloController.receiveGame(posicaoI[0],posicaoI[1],paneArr);
+                            HelloController.paint(posx,posy,style,paneEni);
+                        }else {
+                            posicaoI[0]=Integer.parseInt(posicaoS[0]);
+                            posicaoI[1]=Integer.parseInt(posicaoS[1]);
+
+                            HelloController.receiveGame(posicaoI[0],posicaoI[1],paneArr,serverCheck,server,client,paneEni);
+                        }
+
+
                     }catch (IOException e){
                         e.printStackTrace();
                         System.out.println("Erro a receber coordenadas");
@@ -65,6 +74,18 @@ public class Client {
                 }
             }
         }).start();
+    }
+
+    public void sendStyle(String style){
+        try {
+            bufferedWriter.write(style);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        }catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Erro a enviar mensagem");
+            fechoGeral(socket,bufferedReader,bufferedWriter);
+        }
     }
     public void sendJogada(int posx, int posy){
         String mensagem= posx+" "+posy;
